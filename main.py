@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import models.tasks
+from routers.tasks import router as tasks_router
 from session import engine
 
 
@@ -11,6 +12,8 @@ tags_info = [
 
 
 app = FastAPI(openapi_tags=tags_info)
+
+app.include_router(tasks_router)
 
 
 models.tasks.Base.metadata.create_all(bind=engine)
