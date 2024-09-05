@@ -30,7 +30,7 @@ async def get_task(
     return Task.get_by_id(db=db, id=task_id)
 
 
-@router.put("/api/taks/{task_id}", response_model=204)
+@router.put("/api/taks/{task_id}", status_code=204)
 async def update_task(
     db: db_dependency, task_id: task_id_dependency, task: TaskRequest
 ) -> None:
@@ -39,8 +39,8 @@ async def update_task(
     model_task.update(db)
 
 
-@router.delete("/api/tasks/{task_id}")
-async def delete_task(db: db_dependency, task_id: task_id_dependency, response_model=204) -> None:
+@router.delete("/api/tasks/{task_id}", status_code=204)
+async def delete_task(db: db_dependency, task_id: task_id_dependency) -> None:
     task = Task.get_by_id(db=db, id=task_id)
 
     task.delete(db=db)

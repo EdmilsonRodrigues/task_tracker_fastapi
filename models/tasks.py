@@ -1,29 +1,10 @@
 from typing import Annotated
-from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field
-from session import Base
-from sqlalchemy import Column, Enum, Integer, String
+from models.general import BaseMixin
+from sqlalchemy import Enum
 from sqlalchemy.orm import Session
 
-
-class Tasks(Base):
-    __tablename__ = "tasks"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer)
-    title = Column(String)
-    description = Column(String)
-    priority = Column(Integer)
-    status = Column(String)
-
-    def dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "priority": self.priority,
-            "status": self.status,
-        }
+from models.models import Tasks
 
 
 class Status(str, Enum):
@@ -53,31 +34,5 @@ class TaskRequest(BaseModel):
         db.commit()
 
 
-class Task(TaskRequest):
-    id: Annotated[int, Field(description="The id of the task", gt=0)]
-
-    @classmethod
-    def get_by_id(cls, db: Session, id: int) -> "Task":
-        result = db.query(Tasks).filter(Tasks.id == id).first()
-        if result:
-            return cls(**result.dict())
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    @classmethod
-    def get_by_query(cls, db: Session, **kwargs) -> list["Task"]:
-        tasks = db.query(Tasks).all()
-        validated_tasks = []
-        for task in tasks:
-            validated_tasks.append(cls(**task.dict()))
-        return validated_tasks
-
-    def update(self, db: Session):
-        task = Tasks(**self.model_dump())
-
-        db.add(task)
-        db.commit()
-
-    def delete(self, db: Session):
-        db.query(Tasks).filter(Tasks.id == self.id).delete()
-
-        db.commit()
+class Task(BaseMixin, TaskRequest):
+    pass
