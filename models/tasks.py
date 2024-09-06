@@ -35,4 +35,5 @@ class TaskRequest(BaseModel):
 
 
 class Task(BaseMixin, TaskRequest):
+    user_id: Annotated[int, Field(description="The id of the owner of the task", gt=0)]
     pass

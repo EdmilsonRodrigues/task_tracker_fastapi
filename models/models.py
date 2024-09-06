@@ -40,5 +40,3 @@ class Tasks(Base):
             "priority": self.priority,
             "status": self.status,
         }
-
-
